@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Visual Strategy Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a vertical, single-page journey that mirrors the four-phase structure of the source report. This is the most intuitive information architecture because the user's goal is to understand the marketing funnel's progression. A sticky top navigation provides direct access to each phase, while an interactive timeline at the top offers a high-level visual summary and secondary navigation. This dual-navigation approach supports both linear scrolling for a narrative experience and direct access for targeted information retrieval, ensuring maximum usability. -->
+    <!-- Visualization & Content Choices: Report Info: Phased image concepts -> Goal: Present a clear strategic plan -> Viz/Presentation Method: Interactive HTML timeline for overview, styled content cards for detailed concepts, and a Chart.js line chart to visualize the abstract goal of "building trust" over the campaign phases. -> Interaction: Click-to-scroll navigation from the timeline and nav bar, with active section highlighting. -> Justification: This combination transforms a static document into an engaging, easy-to-digest dashboard that clarifies the strategy's flow and intended impact. The line chart creatively fulfills the data visualization requirement by quantifying a qualitative goal. -> Library/Method: Vanilla JS for interactions, Chart.js for the chart. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #403A35;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #D97706; 
+            transition: width 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #D97706;
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
+        }
+        .timeline-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .timeline-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl md:text-2xl font-bold text-amber-800">Visual Strategy</h1>
+                <nav id="nav-menu" class="hidden md:flex items-center space-x-8">
+                    <a href="#phase1" class="nav-link font-semibold text-gray-600">Phase 1</a>
+                    <a href="#phase2" class="nav-link font-semibold text-gray-600">Phase 2</a>
+                    <a href="#phase3" class="nav-link font-semibold text-gray-600">Phase 3</a>
+                    <a href="#phase4" class="nav-link font-semibold text-gray-600">Phase 4</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+        
+        <section id="intro" class="text-center mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">An Interactive Guide to the 180-Day Campaign</h2>
+            <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600">This application breaks down the complete visual strategy for the email marketing sequence. Explore each phase to understand the concepts, goals, and imagery designed to guide the customer journey from awareness to action.</p>
+        </section>
+
+        <section id="timeline-overview" class="mb-16 md:mb-24">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">Customer Journey Timeline</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="timeline-item bg-white p-6 rounded-xl shadow-lg border border-gray-200" data-target="#phase1">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-amber-100 text-amber-800 text-sm font-bold mr-3 px-3 py-1.5 rounded-full">1</span>
+                        <h4 class="text-xl font-semibold">The Foundation</h4>
+                    </div>
+                    <p class="text-gray-600">Days 1-45. Build rapport by highlighting the core problem and planting the seed for a new mindset.</p>
+                </div>
+                <div class="timeline-item bg-white p-6 rounded-xl shadow-lg border border-gray-200" data-target="#phase2">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-amber-100 text-amber-800 text-sm font-bold mr-3 px-3 py-1.5 rounded-full">2</span>
+                        <h4 class="text-xl font-semibold">The Education</h4>
+                    </div>
+                    <p class="text-gray-600">Days 46-90. Introduce the principles of automated income through stories of ingenuity and smart work.</p>
+                </div>
+                <div class="timeline-item bg-white p-6 rounded-xl shadow-lg border border-gray-200" data-target="#phase3">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-amber-100 text-amber-800 text-sm font-bold mr-3 px-3 py-1.5 rounded-full">3</span>
+                        <h4 class="text-xl font-semibold">Social Proof</h4>
+                    </div>
+                    <p class="text-gray-600">Days 91-135. Build trust and credibility with authentic testimonials and case studies.</p>
+                </div>
+                <div class="timeline-item bg-white p-6 rounded-xl shadow-lg border border-gray-200" data-target="#phase4">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-amber-100 text-amber-800 text-sm font-bold mr-3 px-3 py-1.5 rounded-full">4</span>
+                        <h4 class="text-xl font-semibold">The Momentum</h4>
+                    </div>
+                    <p class="text-gray-600">Days 136-180. Summarize the journey and provide a compelling, clear path to taking action.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase1" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <span class="text-amber-600 font-semibold">Phase 1 / Days 1-45</span>
+                <h3 class="text-3xl md:text-4xl font-bold mt-2">The Foundation</h3>
+                <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-4">The initial phase focuses on connecting with the audience's current struggles, fostering a realization that a better way exists, and beginning the critical shift in their mindset towards automation and freedom.</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Problem / Struggle</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: The daily grind.</p>
+                    <p class="text-gray-600">Image: A tired but determined professional at a desk, with a clock prominently displayed. The background is blurred, symbolizing a feeling of being "stuck" in a routine.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Realization</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: A "lightbulb" moment.</p>
+                    <p class="text-gray-600">Image: A person looking out a window at a sunrise over an open landscape. The soft, hopeful light reflects a sense of calm and new possibility on their face.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Shifting Mindset</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Linear vs. scalable model.</p>
+                    <p class="text-gray-600">Image: A visual metaphor showing a single winding path that gently splits into multiple, interconnected streams, representing scalable growth.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase2" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <span class="text-amber-600 font-semibold">Phase 2 / Days 46-90</span>
+                <h3 class="text-3xl md:text-4xl font-bold mt-2">The Education</h3>
+                 <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-4">This phase shifts from the "why" to the "how." It educates the audience on the core principles of the Automated Income System (AIS) and inspires them with relatable stories of ingenuity.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">The "How"</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Visualizing AIS components.</p>
+                    <p class="text-gray-600">Image: A clean, modern graphic connecting three simple icons: a brain (idea), a gear (system), and a sprout (growth), symbolizing the process from concept to automated growth.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Stories of Ingenuity</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Work not tied to a desk.</p>
+                    <p class="text-gray-600">Image: Authentic, unstaged photos of people working in relaxed environments, like a park or on a beach, smiling and calm, showcasing the freedom of a location-independent system.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase3" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <span class="text-amber-600 font-semibold">Phase 3 / Days 91-135</span>
+                <h3 class="text-3xl md:text-4xl font-bold mt-2">Social Proof</h3>
+                <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-4">Here, the focus is on building deep trust and overcoming skepticism. Real-world examples, authentic testimonials, and clear transformations make the possibility of success feel tangible and achievable.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Testimonials</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Authentic, personal portraits.</p>
+                    <p class="text-gray-600">Image: High-quality, warm-toned headshots of a diverse group of people. Their smiles look genuine, and a small, powerful quote could be overlaid on the image to add voice.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">Before and After</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Visual transformation.</p>
+                    <p class="text-gray-600">Image: A two-panel visual. Left: a messy, chaotic desk piled with paper. Right: the same desk, now clean and organized, with a plant and a tablet displaying a simple dashboard.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="customer-journey-chart" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold mt-2">Visualizing Customer Trust</h3>
+                <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-4">This chart illustrates the intended impact of the visual strategy, showing how customer trust and engagement are designed to build progressively through each phase of the campaign.</p>
+            </div>
+            <div class="bg-white p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="chart-container">
+                    <canvas id="trustChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="phase4" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <span class="text-amber-600 font-semibold">Phase 4 / Days 136-180</span>
+                <h3 class="text-3xl md:text-4xl font-bold mt-2">The Momentum</h3>
+                <p class="max-w-2xl mx-auto text-lg text-gray-600 mt-4">The final phase consolidates the entire journey. It reinforces the opportunity, overcomes final hesitations, and provides an empowering and inspiring call to action, encouraging users to join a community of success.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">The Opportunity</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: Breaking through barriers.</p>
+                    <p class="text-gray-600">Image: A person standing before a glass wall or ceiling with a small, light-filled crack in it, symbolizing a clear and hopeful path to breaking through previous limitations.</p>
+                </div>
+                 <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100">
+                    <h4 class="text-lg font-semibold text-amber-800 mb-2">The Final Push</h4>
+                    <p class="text-gray-700 font-medium mb-4">Concept: An empowering, inviting call.</p>
+                    <p class="text-gray-600">Image: A diverse group of people looking together towards a bright horizon. They appear as a supportive community, conveying shared success and future possibility.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('main section[id]');
+        const timelineItems = document.querySelectorAll('.timeline-item');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.4
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        timelineItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const targetId = item.dataset.target;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        const ctx = document.getElementById('trustChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(217, 119, 6, 0.5)');
+        gradient.addColorStop(1, 'rgba(217, 119, 6, 0)');
+
+        const trustChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Phase 1: Foundation', 'Phase 2: Education', 'Phase 3: Social Proof', 'Phase 4: Momentum'],
+                datasets: [{
+                    label: 'Customer Trust & Engagement',
+                    data: [20, 45, 75, 100],
+                    backgroundColor: gradient,
+                    borderColor: '#D97706',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#FDFBF8',
+                    pointBorderColor: '#D97706',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 110,
+                        grid: {
+                            color: '#F3F4F6',
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'
+                            },
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                        },
+                        ticks: {
+                            color: '#6B7280',
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                             maxRotation: 0,
+                             minRotation: 0,
+                             callback: function(value, index, values) {
+                                const label = this.getLabelForValue(value);
+                                if (window.innerWidth < 768) {
+                                    return label.split(': ')[0];
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#403A35',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold',
+                        },
+                        bodyFont: {
+                            size: 12,
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `Engagement Level: ${context.parsed.y}%`;
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                }
+            }
+        });
+        
+        window.addEventListener('resize', () => {
+            trustChart.update();
+        });
+    });
+</script>
+</body>
+</html>
